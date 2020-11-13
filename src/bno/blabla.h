@@ -1,0 +1,2 @@
+void bullcrap(int);
+
