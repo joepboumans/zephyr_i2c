@@ -20,6 +20,8 @@ s8 bno055_write(u8 dev_addr, u8 reg_addr, u8 *reg_data, u8 cnt);
 s8 bno055_read(u8 dev_addr, u8 reg_addr, u8 *reg_data, u8 cnt);
 void delay_ms(u32 milis);
 
+volatile int m_xfer_done, m_read_done;
+
 s8 I2C_routine(void)
 {
     sensor.bus_write = bno055_write;
@@ -55,12 +57,17 @@ void delay_ms(u32 msek){
 s8 bno055_read(u8 dev_addr, u8 reg_addr, u8 *reg_data, u8 cnt)
 {   
     nrfx_twim_xfer_desc_t descr = NRFX_TWIM_XFER_DESC_TXRX(dev_addr, &reg_addr, 1, reg_data, cnt);
-    s32 BNO055_iERROR = BNO055_INIT_VALUE;
     u8 stringpos = BNO055_INIT_VALUE;
-    int twim_xfer_ret = nrfx_twim_xfer(&m_twim, &descr, 0);
-    // k_msleep(10);
-    return (s8)BNO055_iERROR;
+    m_xfer_done = false;
+    s32 result = nrfx_twim_xfer(&m_twim, &descr, 0);
+    if( result != NRFX_SUCCESS){
+        return result;
+    }
+    while( m_xfer_done == false);
+
+    return (s8)NRFX_SUCCESS;
 }
+
 
 
 
@@ -69,7 +76,15 @@ static void twim_event_handler(nrfx_twim_evt_t const *const p_event)
     switch (p_event->type)
     {
     case NRFX_TWIM_EVT_DONE:
-        // printk("NRFX_TWIM_EVT_DONE \n");
+        if (p_event->xfer_desc.type == NRFX_TWIM_XFER_TX)
+            {
+                m_xfer_done = true;
+            }
+            if (p_event->xfer_desc.type == NRFX_TWIM_XFER_TXRX)
+            {
+                m_read_done = true;
+            }
+        printk("NRFX_TWIM_EVT_DONE \n");
         break;
     case NRFX_TWIM_EVT_ADDRESS_NACK:
         printk("NRFX_TWIM_EVT_ADDRESS_NACK \n");
@@ -98,7 +113,7 @@ int main(void)
     m_twim_config.hold_bus_uninit = false;
 
     //Initialization of the TWIM MASTER
-    int ret = nrfx_twim_init(&m_twim, &m_twim_config, NULL, NULL);
+    int ret = nrfx_twim_init(&m_twim, &m_twim_config, twim_event_handler, NULL);
     // printk("Return from nrfx_twim_init(): %02X \n", ret);
 
     //This routine initializes an interrupt handler for an IRQ. irq_p, priority_p, isr_p, isr_param_p, flags_p
