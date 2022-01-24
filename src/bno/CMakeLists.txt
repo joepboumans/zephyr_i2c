@@ -1,1 +1,0 @@
-target_sources(app PRIVATE bno055.c blabla.c)

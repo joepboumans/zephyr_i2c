@@ -1,0 +1,8 @@
+comment "Device Drivers"
+# rsource "sensor"
+
+menuconfig SENSOR
+    bool "I2C line test"
+    depends on (I2C)
+    help
+      Enable I2C-based driver
