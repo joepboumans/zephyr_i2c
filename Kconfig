@@ -1,0 +1,4 @@
+
+mainmenu "I2C demo"
+
+source "Kconfig.zephyr"

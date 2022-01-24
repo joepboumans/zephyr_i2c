@@ -1,0 +1,1 @@
+file(GLOB app_sources *.c *.cpp)
