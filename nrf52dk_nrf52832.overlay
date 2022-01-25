@@ -1,20 +1,26 @@
-&i2c1{
-	compatible="nordic,nrf-twim";
-	status = "okay";
-	sda-pin = <7>;
-	scl-pin = <8>;
-	clock-frequency = <I2C_BITRATE_STANDARD>;
-	twis_device1:MS5367@ec {
-		// compatible = "nordic,sensor";
-		label = "Sensor";
-		reg = <0xEC>;
-	};
-	SHTC3@70{
-		compatible = "sensirion,shtcx";
-		chip = "shtc3";
-		measure-mode = "normal";
-		label = "SHT3 at addr 0x70";
-		reg = <0x70>;
+&i2c0{
+	// compatible="nordic,nrf-twim";
+	// status = "okay";
+	// // sda-pin = <30>;
+	// // scl-pin = <31>;
+	// clock-frequency = <I2C_BITRATE_STANDARD>;
+	// twis_device1:MS5367@ec {
+	// 	// compatible = "nordic,sensor";
+	// 	label = "MS5367";
+	// 	reg = <0xEC>;
+	// };
+	// shtc3_0:SHTC3@70{
+	// 	compatible = "sensirion,shtcx";
+	// 	chip = "shtc3";
+	// 	measure-mode = "normal";
+	// 	label = "SHTC3";
+	// 	reg = <0x70>;
+	// };
+	MP8862@6b {
+		compatible = "sensor,mp8862";
+		status = "okay";
+		label = "MP8862";
+		reg = <0x6b>;
 	};
 };
 
